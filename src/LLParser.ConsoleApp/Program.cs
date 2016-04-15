@@ -46,6 +46,23 @@ namespace LLParser.ConsoleApp
 
                 var language = GetLanguage();
 
+                WriteLines("The language is:");
+                ShowValue(language);
+
+                int k = -1;
+
+                do
+                {
+                    WriteLines("Enter the number of tokens to use for the parser.");
+                    if (!Int32.TryParse(ReadLine(), out k) || k < 1)
+                    {
+                        ShowError(new ArgumentException("Invalid input."));
+                    }
+                }
+                while (k < 1);
+
+                WriteLines("Enter a string to parse. Press enter when done.");
+                var input = ReadLine();
 
             }
             catch (Exception error)
