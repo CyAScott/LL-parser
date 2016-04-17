@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace LLParser.Models
+namespace LLParser
 {
-    public class LanguageModel : IEnumerable<GrammarModel>
+    public partial class Language : IEnumerable<GrammarRules>
     {
-        IEnumerator<GrammarModel> IEnumerable<GrammarModel>.GetEnumerator()
+        IEnumerator<GrammarRules> IEnumerable<GrammarRules>.GetEnumerator()
         {
             return grammarRules.GetEnumerator();
         }
@@ -17,8 +17,8 @@ namespace LLParser.Models
             return grammarRules.GetEnumerator();
         }
 
-        private GrammarModel start;
-        private readonly HashSet<GrammarModel> grammarRules;
+        private GrammarRules start;
+        private readonly HashSet<GrammarRules> grammarRules;
 
         public override string ToString()
         {
@@ -35,11 +35,11 @@ namespace LLParser.Models
                 Start);
         }
 
-        public LanguageModel()
+        public Language()
         {
-            grammarRules = new HashSet<GrammarModel>();
+            grammarRules = new HashSet<GrammarRules>();
         }
-        public GrammarModel this[char name]
+        public GrammarRules this[char name]
         {
             get
             {
@@ -54,7 +54,7 @@ namespace LLParser.Models
             }
         }
 
-        public GrammarModel Start
+        public GrammarRules Start
         {
             get
             {

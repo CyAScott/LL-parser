@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using LLParser.Models;
 
 namespace LLParser.ConsoleApp
 {
     public static partial class Program
     {
-        public static LanguageModel GetLanguage()
+        public static Language GetLanguage()
         {
             string line;
-            var language = new LanguageModel();
+            var language = new Language();
 
             do
             {
@@ -26,7 +25,7 @@ namespace LLParser.ConsoleApp
 
                     var name = line.TrimStart()[0];
 
-                    language[name] = new GrammarModel(name, line.TrimStart().Substring(1).TrimStart().Substring(1));
+                    language[name] = new GrammarRules(name, line.TrimStart().Substring(1).TrimStart().Substring(1));
 
                     WriteLines("The current language is:");
 

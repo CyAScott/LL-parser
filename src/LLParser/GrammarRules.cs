@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LLParser.Models
+namespace LLParser
 {
-    public class GrammarModel
+    public class GrammarRules
     {
-        public bool Equals(GrammarModel obj)
+        public bool Equals(GrammarRules obj)
         {
             return !ReferenceEquals(obj, null) && 
             (
@@ -22,7 +22,7 @@ namespace LLParser.Models
         }
         public override bool Equals(object obj)
         {
-            return Equals(obj as GrammarModel);
+            return Equals(obj as GrammarRules);
         }
         public override int GetHashCode()
         {
@@ -35,31 +35,31 @@ namespace LLParser.Models
         {
             return String.Format("{0} -> {1}", Name, String.Join("|", Rules));
         }
-        public static bool operator ==(GrammarModel a, GrammarModel b)
+        public static bool operator ==(GrammarRules a, GrammarRules b)
         {
             return Equals(a, b);
         }
-        public static bool operator !=(GrammarModel a, GrammarModel b)
+        public static bool operator !=(GrammarRules a, GrammarRules b)
         {
             return !Equals(a, b);
         }
 
-        public GrammarModel(char name, string rules)
+        public GrammarRules(char name, string rules)
             : this(name, rules.Split('|'))
         {
         }
-        public GrammarModel(char name, string firstRule, string secondRule, params string[] restOfTheRules)
+        public GrammarRules(char name, string firstRule, string secondRule, params string[] restOfTheRules)
             : this(name, new[] { firstRule, secondRule }.Concat(restOfTheRules))
         {
         }
-        public GrammarModel(char name, IEnumerable<string> rules)
+        public GrammarRules(char name, IEnumerable<string> rules)
         {
             if (rules == null) throw new ArgumentNullException("rules");
             Name = name;
-            Rules = new HashSet<string>(rules.Select(rule => rule ?? ""));
+            Rules = new List<string>(rules.Select(rule => rule ?? "").Distinct()).AsReadOnly();
         }
 
-        public char Name { get; set; }
-        public HashSet<string> Rules { get; set; }
+        public char Name { get; private set; }
+        public IReadOnlyList<string> Rules { get; private set; }
     }
 }
