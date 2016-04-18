@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LLParser.ConsoleApp
 {
@@ -69,7 +68,7 @@ namespace LLParser.ConsoleApp
 
                 WriteLines("Creating the parsing table.");
 
-                var parsingTree = new TreeRoot(language, k);
+                var parsingTree = new LlParser(language, k);
                 var rules = new List<char>();
                 var derivation = new List<string>();
 
@@ -80,23 +79,23 @@ namespace LLParser.ConsoleApp
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 foreach (var rule in parsingTree.Parse(input))
                 {
-                    rules.Add(rule.Item1.Name);
+                    rules.Add(rule.Item1);
                     derivation.Add(rule.Item2);
 
-                    Console.WriteLine("Processing Rule: {0}[{1}]", rule.Item1.Name, rule.Item1.RuleIndex);
+                    Console.WriteLine("Processing Rule: {0}", rule.Item1);
                 }
                 Console.WriteLine();
 
                 WriteLines("Done.", "A total of " + rules.Count + " rules processed.",
                     "Rules Followed:", "\t" + String.Join(", ", rules),
                     "Leftmost Derivations:", "\t" + String.Join(" -> ", derivation) + " -> " + input);
-
-                Console.ReadLine();
             }
             catch (Exception error)
             {
                 ShowError(error);
             }
+
+            Console.ReadLine();
         }
     }
 }

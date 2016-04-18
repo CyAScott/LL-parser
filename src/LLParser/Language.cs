@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace LLParser
 {
-    public partial class Language : IEnumerable<GrammarRules>
+    public class Language : IEnumerable<GrammarRules>
     {
         IEnumerator<GrammarRules> IEnumerable<GrammarRules>.GetEnumerator()
         {
