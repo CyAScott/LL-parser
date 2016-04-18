@@ -10,7 +10,9 @@ namespace LLParser
         private readonly List<TreeBranch> derivationTreeBranches;
         private readonly char[] nonTerminals;
         private readonly char[] terminals;
-        private void buildTree(GrammarRules grammarRules, TreeBranch parentBranch = null, string ruleRemainder = null)
+        private void buildTree(GrammarRules grammarRules, 
+            TreeBranch parentBranch = null, 
+            GrammarRules startingRule = null, int? startingRuleIndex = null)
         {
             for (var index = 0; index < grammarRules.Rules.Count; index++)
             {
@@ -23,12 +25,14 @@ namespace LLParser
 
                     if (terminals.Contains(c))
                     {
-                        branch.Rule.Append(c);
                         branch.Terminals.Append(c);
                         if (branch.Terminals.Length == K)
                         {
-                            branch.Rule.Append(grammarRules.Rules[index].Substring(ruleIndex + 1) + ruleRemainder);
-                            derivationTreeBranches.Add(branch);
+                            branch.Rule = (startingRule ?? grammarRules).Rules[startingRuleIndex ?? index];
+
+                            var branchKey = branch.ToString();
+                            if (derivationTreeBranches.All(tree => tree.ToString() != branchKey))
+                                derivationTreeBranches.Add(branch);
                             break;
                         }
                     }
@@ -43,7 +47,9 @@ namespace LLParser
 
                         //branch.Rule.Append(c);
 
-                        buildTree(childRule, branch, grammarRules.Rules[index].Substring(ruleIndex + 1) + (ruleRemainder ?? ""));
+                        buildTree(childRule, branch,
+                            startingRule ?? grammarRules,
+                            startingRuleIndex ?? index);
 
                         //No need to process any more because this rule did not produce
                         //a string of terminals equal to k before needing a another nested
@@ -81,12 +87,13 @@ namespace LLParser
             terminals = Language.Terminals.ToCharArray();
 
             //build derivation trees
-            for (K = 1; K <= k; K++)
+            K = k;
+            //for (K = 1; K <= k; K++)
                 foreach (var grammar in Language)
                 {
                     buildTree(grammar);
                 }
-            K--;
+            //K--;
 
             //find ambiguous rules
             var permutations = derivationTreeBranches
@@ -103,8 +110,23 @@ namespace LLParser
                     String.Join(", ", ambiguousInputs)));
 
             //convert derivation trees into a parsing hash table
-            LlParsingTable = derivationTreeBranches
-                .ToDictionary(path => getKey(path.FirstRule, path.Terminals.ToString()), path => path.Rule.ToString());
+            LlParsingTable = new Dictionary<string, string>();
+            foreach (var path in derivationTreeBranches)
+            {
+                var key = getKey(path.FirstRule, path.Terminals.ToString());
+                if (LlParsingTable.ContainsKey(key))
+                {
+                    if (LlParsingTable[key] != path.Rule)
+                        throw new ArgumentException("There is an ambiguous rule.");
+                }
+                else
+                {
+                    LlParsingTable.Add(key, path.Rule);
+                }
+            }
+            //LlParsingTable = derivationTreeBranches
+            //    .Distinct(path => getKey(path.FirstRule, path.Terminals.ToString()))
+            //    .ToDictionary(path => getKey(path.FirstRule, path.Terminals.ToString()), path => path.Rule.ToString());
         }
         public Dictionary<string, string> LlParsingTable { get; private set; }
         public IEnumerable<Tuple<char, string>> Parse(string input)
@@ -183,7 +205,6 @@ namespace LLParser
             {
                 rule
             };
-            Rule = new StringBuilder();
             Terminals = new StringBuilder();
         }
         public TreeBranch(TreeBranch copy, GrammarRuleInfo rule)
@@ -193,7 +214,6 @@ namespace LLParser
             {
                 rule
             };
-            Rule = new StringBuilder(copy.Rule.ToString());
             Terminals = new StringBuilder(copy.Terminals.ToString());
         }
         public List<GrammarRuleInfo> Path { get; set; }
@@ -204,13 +224,13 @@ namespace LLParser
                 return Path.First();
             }
         }
-        public StringBuilder Rule { get; set; }
         public StringBuilder Terminals { get; set; }
         public int BranchHeight { get; set; }
+        public string Rule { get; set; }
 
         public override string ToString()
         {
-            return String.Format("{0} -> {1}", String.Join(", ", Path), Terminals);
+            return Path.Count == 0 ? "Unknown" : String.Format("{0},{1} -> {2}", Terminals, FirstRule.Name, Rule);
         }
     }
     public class GrammarRuleInfo

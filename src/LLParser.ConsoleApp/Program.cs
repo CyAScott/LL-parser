@@ -45,26 +45,21 @@ namespace LLParser.ConsoleApp
                 Console.WriteLine("[LL Parser Console App]");
                 Console.WriteLine();
 
-                //var language = GetLanguage();
-                var language = new Language();
-                language['S'] = new GrammarRules('S', "a|(S+S)");
-                //language['F'] = new GrammarRules('F', "a");
-                language.Start = language['S'];
+                var language = GetLanguage();
 
                 WriteLines("The language is:");
                 ShowValue(language);
 
-                const int k = 1;
-
-                //do
-                //{
-                //    WriteLines("Enter the number of tokens to use for the parser.");
-                //    if (!Int32.TryParse(ReadLine(), out k) || k < 1)
-                //    {
-                //        ShowError(new ArgumentException("Invalid input."));
-                //    }
-                //}
-                //while (k < 1);
+                int k;
+                do
+                {
+                    WriteLines("Enter the number of tokens to use for the parser.");
+                    if (!Int32.TryParse(ReadLine(), out k) || k < 1)
+                    {
+                        ShowError(new ArgumentException("Invalid input."));
+                    }
+                }
+                while (k < 1);
 
                 WriteLines("Creating the parsing table.");
 
@@ -73,9 +68,8 @@ namespace LLParser.ConsoleApp
                 var derivation = new List<string>();
 
                 WriteLines("Enter a string to parse. Press enter when done.");
-                //var input = ReadLine();
-                const string input = "((a+a)+(a+a))";
-
+                var input = ReadLine();
+                
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 foreach (var rule in parsingTree.Parse(input))
                 {
