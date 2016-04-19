@@ -7,7 +7,7 @@ Cy Scott
 # Compile and Run
 
 This project was made with Visual Studio 2013 (VS) and should work on any version of VS after that one. Simply open /src/FinalProject.sln with VS then build and run the LLParser project. You can compile with mono using `xbuild /p:Configuration=Release src/FinalProject.sln` then run the program with
-`mono src/LLParser/bin/Release/LLParser.exe`.
+`mono src/LLParser.ConsoleApp/bin/Release/LLParser.ConsoleApp.exe`.
 
 # Exmaple Output of Program
 Enter a grammer rule in the format: (Non-Terminal Char) = (Grammar Rules Delimited by '|')  
